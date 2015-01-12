@@ -7,7 +7,11 @@ clusterReads<-function(mat,hotspot.flow=c(),hotspot.file="",min.distance=60,hs.b
 		mat<-as.matrix(mat)
 		hs<-c();
 		for(i in 1:nrow(mat)){
-			hs<-rbind(hs,mat[i,hotspot.flow[i,]])
+			if(min(hotspot.flow[i,]) <= 0 || max(hotspot.flow[i,]) > ncol(mat)){
+				hs<-rbind(hs,rep(0,ncol(hotspot.flow)))
+			}else{
+				hs<-rbind(hs,mat[i,hotspot.flow[i,]])
+			}
 		}
 	}else if(hotspot.flow != NULL){
 		hs<-mat[,hotspot.flow]
