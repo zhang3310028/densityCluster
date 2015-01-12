@@ -23,7 +23,10 @@ clusterReads<-function(mat,hotspot.flow=c(1,2),min.distance=60,){
 		length(hs.dist[hs.dist<min.distance])
 	})
 
-	centerLike<-centerLike[order(centerLikeCount,decreasing = T),]
+	orderIndex<-order(centerLikeCount,decreasing=T)
+	orderCount<-centerLikeCount[orderIndex]
+	centerLike<-centerLike[orderIndex,]
+	centerLike<-centerLike[orderCount>=0.05*nrow(hs),]
 
 	useX<-c();
 	useY<-c();
