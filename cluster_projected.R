@@ -1,7 +1,19 @@
 
-clusterReads<-function(mat,hotspot.flow=c(1,2),min.distance=60,hs.base.file=""){
+clusterReads<-function(mat,hotspot.flow=c(),hotspot.file="",min.distance=60,hs.base.file=""){
 	library(plotrix)
-	hs<-mat[,hotspot.flow]
+	if(hotspot.file != ""){
+		hotspot.flow<-read.delim(hotspot.file,header=F);
+		hotspot.flow<-as.matrix(hotspot.flow)
+		mat<-as.matrix(mat)
+		hs<-c();
+		for(i in 1:nrow(mat)){
+			hs<-rbind(hs,mat[i,hotspot.flow[i,]])
+		}
+	}else if(hotspot.flow != NULL){
+		hs<-mat[,hotspot.flow]
+	}else{
+		return(NULL)
+	}
 	peakx<-findPeakIndex(hs[,1])
 	peaky<-findPeakIndex(hs[,2])
 	#
