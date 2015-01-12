@@ -1,10 +1,15 @@
 
-clusterReads<-function(mat,hotspot.flow=c(1,2),min.distance=60,){
+clusterReads<-function(mat,hotspot.flow=c(1,2),min.distance=60,hs.base.file=""){
 	library(plotrix)
 	hs<-mat[,hotspot.flow]
 	peakx<-findPeakIndex(hs[,1])
 	peaky<-findPeakIndex(hs[,2])
 	#
+	if(hs.base.file != ""){
+#		hs.base.data = read.delim(hs.base.file,header=F);
+		lns<-readLines(con = hs.base.file)
+		hs.base.data<-as.matrix(lns);
+	}
 	malen<-max(length(peakx),length(peaky))
 	centerLike<-c()
 	for( i in peakx){
@@ -26,17 +31,16 @@ clusterReads<-function(mat,hotspot.flow=c(1,2),min.distance=60,){
 	orderIndex<-order(centerLikeCount,decreasing=T)
 	orderCount<-centerLikeCount[orderIndex]
 	centerLike<-centerLike[orderIndex,]
+	centerLike<-data.frame(centerLike)
 	centerLike<-centerLike[orderCount>=0.05*nrow(hs),]
 
-	useX<-c();
-	useY<-c();
 	centerLikeNew<-c();
+	count <-0;
 	for(i in 1:nrow(centerLike)){
 		currow<-centerLike[i,];
-		if( ! centerLike[i,1] %in% useX & ! centerLike[i,2] %in% useY){
-			useX<-c(useX,c(centerLike[i,1]))
-			useY<-c(useY,c(centerLike[i,2]))
+		if(count <= 3){
 			centerLikeNew<-rbind(centerLikeNew,centerLike[i,])
+			count = count + 1;
 		}
 	}
 	group<-apply(hs,1,function(xx){
@@ -55,7 +59,11 @@ clusterReads<-function(mat,hotspot.flow=c(1,2),min.distance=60,){
 	range.y<-range(hs[,2])
 	rg<-c(range.x,range.y)
 	rg<-c(min(rg),max(rg))
-	plot(hs,col=group+1,ylim=rg,xlim=rg)
+	if(hs.base.file != ""){
+		plot(hs,col=group+1,ylim=rg,xlim=rg,pch=as.vector(hs.base.data[,1]))
+	}else{
+		plot(hs,col=group+1,ylim=rg,xlim=rg)
+	}
 
 	for(i in 1:nrow(centerLikeNew)){
 		points(centerLikeNew[i,1],centerLikeNew[i,2],pch=19)
