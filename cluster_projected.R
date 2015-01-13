@@ -48,16 +48,27 @@ clusterReads<-function(mat,hotspot.flow=c(),hotspot.file="",min.distance=60,hs.b
 	orderCount<-centerLikeCount[orderIndex]
 	centerLike<-centerLike[orderIndex,]
 	centerLike<-data.frame(centerLike)
-	centerLike<-centerLike[orderCount>=0.05*nrow(hs),]
+#	centerLike<-centerLike[orderCount>=0.05*nrow(hs),]
 
 	centerLikeNew<-c();
+	orderCountNew<-c();
 	count <-0;
 	for(i in 1:nrow(centerLike)){
 		currow<-centerLike[i,];
-		if(count <= 3){
+		cur_count<-orderCount[i];
+		if(i > 1){
+			last_count<-orderCount[i-1];
+		}else{
+			last_count<-cur_count*0.05;
+		}
+		if(cur_count>0.01*nrow(hs) & cur_count >= last_count * 0.03){
 			centerLikeNew<-rbind(centerLikeNew,centerLike[i,])
+			orderCountNew<-c(orderCountNew,orderCount[i])
 			count = count + 1;
 		}
+	}
+	if(is.null(centerLikeNew)){
+		return(NULL);
 	}
 	group<-apply(hs,1,function(xx){
 		diffx<-xx[1] - centerLikeNew[,1]
@@ -86,6 +97,11 @@ clusterReads<-function(mat,hotspot.flow=c(),hotspot.file="",min.distance=60,hs.b
 		drawCircle(centerLikeNew[i,1],centerLikeNew[i,2],r=min.distance,col="gray")
 	}
 
+	resultCount<-nrow(hs)- sum(orderCountNew)
+	gname<-1:(nrow(centerLikeNew)+1)
+	legend("topleft",legend=gname,lty=rep(1,nrow(centerLikeNew)+1),col=gname+1,cex=0.8)
+	legend("topleft",legend=c(orderCountNew,resultCount),lty=rep(1,nrow(centerLikeNew)+1),col=gname+1,cex=0.8)
+	
 
 }
 findPeakIndex<-function(x){
