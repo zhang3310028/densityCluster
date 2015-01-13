@@ -99,8 +99,8 @@ clusterReads<-function(mat,hotspot.flow=c(),hotspot.file="",min.distance=60,hs.b
 
 	resultCount<-nrow(hs)- sum(orderCountNew)
 	gname<-1:(nrow(centerLikeNew)+1)
-	legend("topleft",legend=gname,lty=rep(1,nrow(centerLikeNew)+1),col=gname+1,cex=0.8)
-	legend("topleft",legend=c(orderCountNew,resultCount),lty=rep(1,nrow(centerLikeNew)+1),col=gname+1,cex=0.8)
+#	legend("topleft",legend=gname,lty=rep(1,nrow(centerLikeNew)+1),col=gname+1,cex=0.8)
+	legend("topleft",legend=table(group),lty=rep(1,length(table(group))),col=as.numeric(names(table(group)))+1,cex=0.8)
 	
 
 }
