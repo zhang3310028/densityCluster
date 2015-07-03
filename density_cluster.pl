@@ -677,12 +677,10 @@ sub calculate_cutoff2_2{ # 避免R抽样
 	if($sample_count > $dist_num){ #TODO 这一步可以不用取样
 		$sample_count = $dist_num;
 	}
-	my $kvalue = $dist_num * $t_value;
 	my ($mdist_index,$cur_mdist) = (-1,-1);
 	my $last_arr_len = 0;
 	my $data_end_index= $data_num - 1;
-	my $sample_kvalue = &round($kvalue * $sample_count / $dist_num); #TODO sample_kvalue == 0 
-#	die " $dist_num,$kvalue,$sample_count,$sample_kvalue";
+	my $sample_kvalue = &round($sample_count * $t_value); #TODO sample_kvalue == 0 
 	my @sample_sorted_distance=();
 	while($sample_cur < $sample_count){
 		my @index = &sample_no_rep($data_num,2);
@@ -692,6 +690,9 @@ sub calculate_cutoff2_2{ # 避免R抽样
 	}
 	@sample_sorted_distance = sort{$a <=> $b} @sample_sorted_distance;
 	my $cutoff_distance = $sample_sorted_distance[$sample_kvalue-1];
+	if($cutoff_distance == 0){
+		        $cutoff_distance = 0.0000000001;
+	}
 	return $cutoff_distance;
 }
 
